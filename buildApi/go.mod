@@ -1,4 +1,4 @@
-module main.go
+module github.com/areeb786123/buildApi
 
 go 1.21.5
 
