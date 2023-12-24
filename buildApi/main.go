@@ -45,6 +45,7 @@ func (c *Course) IsEmpty() bool {
 	return c.CourseName == ""
 }
 func getAllCourses(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	fmt.Println("Get all courses")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(courses)
@@ -92,4 +93,42 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("<h1>Course not found </h1>")
 	return
 
+}
+
+func updateCourse(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	//grab id  from the request
+
+	/**
+	loop through course
+	find id
+	update id
+	**/
+
+	for index, course := range courses {
+		params := mux.Vars(r)
+		if index == params["id"] {
+			courses = append(courses[:index], courses[index+1:]...)
+			var course Course
+			_ = json.NewDecoder(r.Body).Decode(&course)
+			course.CourseId = params["id"]
+			courses = append(courses, course)
+			json.NewEncoder(w).Encode(course)
+		}
+	}
+
+	// send response when id is not found
+
+}
+
+func deleteCousreById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	for index, _ := range courses {
+		if index == params["id"] {
+			courses = append(courses[:index], courses[index+1:]...)
+			break
+		}
+	}
+	//send json response of successfull message
 }
