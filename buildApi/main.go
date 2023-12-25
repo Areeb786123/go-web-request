@@ -32,7 +32,16 @@ var courses []Course
 
 func main() {
 	r := mux.NewRouter()
+
+	courses = append(courses, Course{CourseId: "1", CourseName: "Android", CoursePrice: "233", Author: &Author{AuthorName: "Areeb"}})
+	courses = append(courses, Course{CourseId: "2", CourseName: "UI/UX", CoursePrice: "103", Author: &Author{AuthorName: "Jerry"}})
+	//seeding
 	r.HandleFunc("/", homeController).Methods("GET")
+	r.HandleFunc("/allCourses", getAllCourses).Methods("GET")
+	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
+	r.HandleFunc("/addCourse", addCourse).Methods("POST")
+	r.HandleFunc("/updateCourse/{id}", updateCourse).Methods("UPDATE")
+	r.HandleFunc("/deleteCourse/{id}", deleteCousreById).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":4000", r))
 }
 
@@ -107,7 +116,7 @@ func updateCourse(w http.ResponseWriter, r *http.Request) {
 
 	for index, course := range courses {
 		params := mux.Vars(r)
-		if index == params["id"] {
+		if course.CourseId == params["id"] {
 			courses = append(courses[:index], courses[index+1:]...)
 			var course Course
 			_ = json.NewDecoder(r.Body).Decode(&course)
@@ -124,8 +133,8 @@ func updateCourse(w http.ResponseWriter, r *http.Request) {
 func deleteCousreById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	for index, _ := range courses {
-		if index == params["id"] {
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
 			courses = append(courses[:index], courses[index+1:]...)
 			break
 		}
